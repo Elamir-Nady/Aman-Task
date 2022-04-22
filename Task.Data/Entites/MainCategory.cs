@@ -7,6 +7,7 @@ namespace  Entites
     {
         [Key]
         public int Id { get; set; }
-        public int Name { get; set; }
+        [Required]
+        public string Name { get; set; }
     }
 }

@@ -14,6 +14,6 @@ namespace Intrerfaces
         IGenericRepostory<MainCategory> GetMainCategoryRepo();
         IGenericRepostory<SubCategory> GetSubCategoryRepo();
 
-        Task<int> SaveAsync();
+       int Save();
     }
 }

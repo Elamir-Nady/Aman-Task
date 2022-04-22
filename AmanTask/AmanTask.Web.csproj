@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Task.Data\Data.csproj" />
+    <ProjectReference Include="..\Task.Logic\Services.csproj" />
   </ItemGroup>
 
 </Project>

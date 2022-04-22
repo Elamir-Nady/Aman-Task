@@ -8,8 +8,8 @@ namespace Intrerfaces
 {
     public interface IGenericRepostory<T>
     {
-        IEnumerable<T> Get();
-        T GetByID(int id);
+        IEnumerable<T> Get(string[] includes = null);
+        T GetByID(int id, string[] includes = null);
         int Add(T entity);
         void Update(T entity);
         void Remove(T entity);

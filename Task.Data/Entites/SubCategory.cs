@@ -9,7 +9,10 @@ namespace  Entites
     {
         [Key]
         public int Id { get; set; }
-        public int Name { get; set; }
+        [Required]
+
+        public string Name { get; set; }
+        [Required]
 
         public int MianCategoryId { get; set; }
         [ForeignKey("MianCategoryId")]

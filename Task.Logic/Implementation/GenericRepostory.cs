@@ -20,14 +20,31 @@ namespace Implementation
             Table = Context.Set<T>();
         }
 
-        public   IEnumerable<T> Get()
+        public   IEnumerable<T> Get(string[] includes=null)
         {
-           return  Table;
+            IQueryable<T> query = Table;
+            if (includes != null)
+            {
+                foreach (var include in includes)
+                    query = query.Include(include);
+
+            }
+    
+          
+           return query;
         }
 
-        public T GetByID(int id)
+        public T GetByID(int id, string[] includes = null)
         {
-            return  Table.Find(id);
+            IQueryable<T> query = Table;
+            if (includes != null)
+            {
+                foreach (var include in includes)
+                    query = query.Include(include);
+
+            }
+
+            return query.FirstOrDefault(i=>i.Id==id); 
         }
 
         public int Add(T entity)

@@ -41,9 +41,9 @@ namespace Implementation
             return SubCategory;
         }
 
-        public async Task<int> SaveAsync()
+        public  int Save()
         {
-            return await Context.SaveChangesAsync(); 
+            return  Context.SaveChanges(); 
         }
     }
 }

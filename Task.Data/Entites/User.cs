@@ -14,7 +14,6 @@ namespace Task.Data.Entites
         [Required, MaxLength(50)]
         public string FirstName { set; get; }
         public string lasttName { set; get; }
-        public string Username { set; get; }
         public string Email { set; get; }
 
         [Required, MaxLength(11)]
