@@ -41,7 +41,12 @@ namespace Implementation
                 FirstName = model.FirstName,
                 lasttName = model.LastName
             };
+            await _usermanager.AddToRoleAsync(user, "User");
 
+
+            var userClaims = await _usermanager.GetClaimsAsync(user);
+            var roles = await _usermanager.GetRolesAsync(user);
+            var roleClaims = new List<Claim>();
             var result = await _usermanager.CreateAsync(user, model.Password);
 
             if(!result.Succeeded)
