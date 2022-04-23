@@ -36,10 +36,15 @@ namespace AmanTask
              services.AddDbContext<ApplicationDbContext>(options => {
                 options.UseSqlServer(Configuration.GetConnectionString("TaskAman"));
             });
-            services.AddIdentityCore<User>()
-               .AddEntityFrameworkStores<ApplicationDbContext>()
-              .AddDefaultTokenProviders();
-
+            //services.AddIdentityCore<User>()
+            //   .AddEntityFrameworkStores<ApplicationDbContext>()
+            //  .AddDefaultTokenProviders();
+            services.AddIdentity<User, Role>()
+                  .AddEntityFrameworkStores<ApplicationDbContext>()
+                 .AddDefaultTokenProviders();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped(typeof(IGenericRepostory<>), typeof(GenericRepostory<>));
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -61,9 +66,7 @@ namespace AmanTask
                 };
             });
 
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
-            services.AddScoped<IAuthService, AuthService>();
-            services.AddScoped(typeof(IGenericRepostory<>), typeof(GenericRepostory<>));
+           
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

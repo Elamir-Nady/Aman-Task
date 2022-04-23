@@ -9,14 +9,13 @@ using System.Threading.Tasks;
 
 namespace Task.Data.Entites
 {
-    public class User : IdentityUser
+    public class User : IdentityUser<int>
     {
         [Required, MaxLength(50)]
         public string FirstName { set; get; }
         public string lasttName { set; get; }
         public string Email { set; get; }
 
-        [Required, MaxLength(11)]
         public int Phone { set; get; }
         public int SSN { set; get; }
     }

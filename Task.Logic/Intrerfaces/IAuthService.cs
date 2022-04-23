@@ -10,8 +10,10 @@ namespace Intrerfaces
 {
     public interface IAuthService
     {
+        Task<AuthModel> SignUp(RegisterModel signUpModel);
         Task<AuthModel> RegisterAsync(RegisterModel model);
         Task<AuthModel> GetTokenAsync(TokenRequestModel model);
+        Task<AuthModel> Login(TokenRequestModel model);
 
     }
 }

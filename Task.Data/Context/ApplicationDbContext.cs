@@ -11,7 +11,7 @@ using Task.Data.Entites;
 
 namespace Task.Data.Context
 {
-    public class ApplicationDbContext : IdentityDbContext<User>
+    public class ApplicationDbContext : IdentityDbContext<User,Role,int>
     {
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)

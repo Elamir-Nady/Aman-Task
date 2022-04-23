@@ -10,7 +10,7 @@ namespace Intrerfaces
     public interface IUnitOfWork
     {
         IGenericRepostory<Product> GetProductRepo();
-
+        IAuthService GetAuthRepo();
         IGenericRepostory<MainCategory> GetMainCategoryRepo();
         IGenericRepostory<SubCategory> GetSubCategoryRepo();
 

@@ -12,9 +12,13 @@ namespace Controllers
     public class AuthController : Controller
     {
         private readonly IAuthService _authService;
-        public AuthController(IAuthService authService)
+
+        public IUnitOfWork _UnitOfWork { get; }
+
+        public AuthController(IAuthService authService,IUnitOfWork unitOfWork)
         {
             _authService = authService;
+            _UnitOfWork = unitOfWork;
         }
 
 
@@ -29,7 +33,7 @@ namespace Controllers
             if (!ModelState.IsValid)
                 return NotFound(ModelState);
 
-            var result = await _authService.RegisterAsync(model);
+            var result = await _UnitOfWork.GetAuthRepo().SignUp(model);
 
             if (!result.IsAuthenticated)
                 return NotFound(result.Message);
@@ -46,7 +50,7 @@ namespace Controllers
             if (!ModelState.IsValid)
                 return NotFound(ModelState);
 
-            var result = await _authService.GetTokenAsync(model);
+            var result = await _UnitOfWork.GetAuthRepo().Login(model);
 
             if (!result.IsAuthenticated)
                 return NotFound(result.Message);
