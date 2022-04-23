@@ -90,7 +90,7 @@ namespace AmanTask
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Product}/{action=Index}/{id?}");
+                    pattern: "{controller=Auth}/{action=Login}/{id?}");
             });
         }
     }

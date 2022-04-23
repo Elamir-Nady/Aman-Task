@@ -11,18 +11,20 @@ using System.Text;
 using System.Threading.Tasks;
 using Task.Data.Entites;
 using Helpers;
+using Microsoft.Extensions.Options;
+using Services.ViewModels;
 
 namespace Implementation
 {
     public class AuthService : IAuthService
     {
         private readonly UserManager<User> _usermanager;
-        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly JWT _jwt;
 
-        public AuthService(UserManager<User> usermanager)
+        public AuthService(UserManager<User> usermanager , IOptions<JWT> jwt)
         {
             _usermanager = usermanager;
+            _jwt = jwt.Value;
         }
         public async Task<AuthModel> RegisterAsync(RegisterModel model)
         {
@@ -53,7 +55,7 @@ namespace Implementation
                 return new AuthModel { Message = errors };
             }
 
-            await _usermanager.AddToRoleAsync(user, "User");
+
 
             var jwtSecurityToken = await CreateJwtToken(user);
 
@@ -61,23 +63,35 @@ namespace Implementation
             {
                 Email = user.Email,
                 IsAuthenticated = true,
-                Roles = new List<string> { "User" },
                 Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
                 Username = user.UserName
             };
         }
 
-       
+        public async Task<AuthModel> GetTokenAsync(TokenRequestModel model)
+        {
+            var authModel = new AuthModel();
+            var user = await _usermanager.FindByEmailAsync(model.Email);
+
+            if (user is null || !await _usermanager.CheckPasswordAsync(user, model.Password))
+            {
+                authModel.Message = "Email or Password is incorrect!";
+                return authModel;
+            }
+
+            var jwtSecurityToken = await CreateJwtToken(user);
+
+            authModel.IsAuthenticated = true;
+            authModel.Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
+            authModel.Email = user.Email;
+            authModel.Username = user.UserName;
+
+            return authModel;
+        }
+
         private async Task<JwtSecurityToken> CreateJwtToken (User user)
         {
             var userClaims = await _usermanager.GetClaimsAsync(user);
-            var roles = await _usermanager.GetRolesAsync(user);
-            var roleClaims = new List<Claim>();
-
-            foreach (var role in roles)
-            {
-                roleClaims.Add(new Claim( "roles", role));
-            }
 
             var claims = new[]
             {
@@ -86,8 +100,7 @@ namespace Implementation
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 new Claim("uid", user.Id)
             }
-            .Union(userClaims)
-            .Union(roleClaims);
+            .Union(userClaims);
 
             var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwt.Key));
             var signingCredentials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);

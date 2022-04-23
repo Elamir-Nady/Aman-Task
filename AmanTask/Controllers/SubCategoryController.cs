@@ -1,11 +1,13 @@
 ﻿using Entites;
 using Intrerfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace AmanTask.Web.Controllers
 {
+    [Authorize]
     public class SubCategoryController : Controller
     {
         public IUnitOfWork _UnitOfWork { get; }
