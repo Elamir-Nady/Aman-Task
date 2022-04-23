@@ -1,4 +1,5 @@
 ﻿using Intrerfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Models;
 using Services.ViewModels;
@@ -24,6 +25,10 @@ namespace Controllers
 
         public ActionResult register()
         {
+            if (HttpContext.Session.GetString("_Token") != null)
+            {
+                return RedirectToAction("index", "Product");
+            }
             return View();
         }
 
@@ -37,11 +42,16 @@ namespace Controllers
 
             if (!result.IsAuthenticated)
                 return NotFound(result.Message);
+            HttpContext.Session.SetString("_Token", result.Token);
 
-                return Redirect("/product/index");
+            return RedirectToAction("index", "Product");
         }
         public ActionResult Login()
         {
+            if (HttpContext.Session.GetString("_Token") != null)
+            {
+                return RedirectToAction("index", "Product");
+            }
             return View();
         }
         [HttpPost("Login")]
@@ -54,8 +64,9 @@ namespace Controllers
 
             if (!result.IsAuthenticated)
                 return NotFound(result.Message);
+            HttpContext.Session.SetString("_Token", result.Token);
 
-            return Redirect("/product/index");
+            return RedirectToAction("index", "Product");
         }
 
     }

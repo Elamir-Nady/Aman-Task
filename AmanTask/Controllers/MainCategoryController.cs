@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AmanTask.Web.Controllers
 {
-    [Authorize]
     public class MainCategoryController : Controller
     {
         public IUnitOfWork _UnitOfWork { get; }
@@ -18,28 +17,46 @@ namespace AmanTask.Web.Controllers
         // GET: MainCategoryController
         public ActionResult Index()
         {
-            var maincats=_UnitOfWork.GetMainCategoryRepo().Get();
-            if (maincats == null)
-                return NotFound();
+            if (HttpContext.Session.GetString("_Token") != null)
+            {
+                var maincats = _UnitOfWork.GetMainCategoryRepo().Get();
+                if (maincats == null)
+                    return NotFound();
 
-            return View(maincats);
+                return View(maincats);
+
+            }
+
+            return NotFound();
         }
 
         // GET: MainCategoryController/Details/5
         public ActionResult Details(int id)
         {
-            if (id == 0)
-                return NotFound();
-            var maincat = _UnitOfWork.GetMainCategoryRepo().GetByID(id);
-            if (maincat == null)
-                return NotFound(id);
-            return View(maincat);
+            if (HttpContext.Session.GetString("_Token") != null)
+            {
+                if (id == 0)
+                    return NotFound();
+                var maincat = _UnitOfWork.GetMainCategoryRepo().GetByID(id);
+                if (maincat == null)
+                    return NotFound(id);
+                return View(maincat);
+
+            }
+            return NotFound();
+
         }
 
         // GET: MainCategoryController/Create
         public ActionResult Create()
         {
-            return View();
+            if (HttpContext.Session.GetString("_Token") != null)
+            {
+                return View();
+
+            }
+            return NotFound();
+
         }
 
         // POST: MainCategoryController/Create
@@ -47,32 +64,45 @@ namespace AmanTask.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(MainCategory maincat)
         {
-            try
+            if (HttpContext.Session.GetString("_Token") != null)
             {
-                if (ModelState.IsValid)
+                try
                 {
-                    if (maincat == null)
-                        return NotFound();
-                    _UnitOfWork.GetMainCategoryRepo().Add(maincat);
-                    _UnitOfWork.Save();
+                    if (ModelState.IsValid)
+                    {
+                        if (maincat == null)
+                            return NotFound();
+                        _UnitOfWork.GetMainCategoryRepo().Add(maincat);
+                        _UnitOfWork.Save();
+                    }
+                    return RedirectToAction(nameof(Index));
                 }
-                return RedirectToAction(nameof(Index));
+                catch
+                {
+                    return View();
+                }
+
             }
-            catch
+            else
             {
-                return View();
+                return NotFound();
             }
         }
 
         // GET: MainCategoryController/Edit/5
         public ActionResult Edit(int id)
         {
-            if (id == 0)
-                return NotFound();
-            var maincat = _UnitOfWork.GetMainCategoryRepo().GetByID(id);
-            if (maincat == null)
-                return NotFound(id);
-            return View(maincat);
+            if (HttpContext.Session.GetString("_Token") != null)
+            {
+                if (id == 0)
+                    return NotFound();
+                var maincat = _UnitOfWork.GetMainCategoryRepo().GetByID(id);
+                if (maincat == null)
+                    return NotFound(id);
+                return View(maincat);
+            }
+            return NotFound();
+
         }
 
         // POST: MainCategoryController/Edit/5
@@ -82,20 +112,24 @@ namespace AmanTask.Web.Controllers
         {
             try
             {
-                if (ModelState.IsValid)
+                if (HttpContext.Session.GetString("_Token") != null)
                 {
-                    if (id == 0)
-                        return NotFound();
-                    if (maincat == null)
-                        return NotFound();
-                    var maincatdb = _UnitOfWork.GetMainCategoryRepo().GetByID(id);
-                    if (maincatdb == null)
-                        return NotFound(id);
-                    maincatdb.Name = maincat.Name;
-                    _UnitOfWork.GetMainCategoryRepo().Update(maincatdb);
-                    _UnitOfWork.Save();
+                    if (ModelState.IsValid)
+                    {
+                        if (id == 0)
+                            return NotFound();
+                        if (maincat == null)
+                            return NotFound();
+                        var maincatdb = _UnitOfWork.GetMainCategoryRepo().GetByID(id);
+                        if (maincatdb == null)
+                            return NotFound(id);
+                        maincatdb.Name = maincat.Name;
+                        _UnitOfWork.GetMainCategoryRepo().Update(maincatdb);
+                        _UnitOfWork.Save();
+                    }
+                    return RedirectToAction(nameof(Index));
                 }
-                return RedirectToAction(nameof(Index));
+                return NotFound();
             }
             catch
             {
@@ -106,12 +140,16 @@ namespace AmanTask.Web.Controllers
         // GET: MainCategoryController/Delete/5
         public ActionResult Delete(int id)
         {
-            if (id == 0)
-                return NotFound();
-            var maincat = _UnitOfWork.GetMainCategoryRepo().GetByID(id);
-            if (maincat == null)
-                return NotFound(id);
-            return View(maincat);
+            if (HttpContext.Session.GetString("_Token") != null)
+            {
+                if (id == 0)
+                    return NotFound();
+                var maincat = _UnitOfWork.GetMainCategoryRepo().GetByID(id);
+                if (maincat == null)
+                    return NotFound(id);
+                return View(maincat);
+            }
+            return NotFound();
         }
 
         // POST: MainCategoryController/Delete/5
@@ -119,19 +157,24 @@ namespace AmanTask.Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Delete(int id, MainCategory maincat)
         {
+
             try
             {
-                if (id == 0)
-                    return NotFound();
-                if (maincat == null)
-                    return NotFound();
-                var maincatdb = _UnitOfWork.GetMainCategoryRepo().GetByID(id);
-                if (maincatdb == null)
-                    return NotFound(id);
+                if (HttpContext.Session.GetString("_Token") != null)
+                {
+                    if (id == 0)
+                        return NotFound();
+                    if (maincat == null)
+                        return NotFound();
+                    var maincatdb = _UnitOfWork.GetMainCategoryRepo().GetByID(id);
+                    if (maincatdb == null)
+                        return NotFound(id);
 
-                _UnitOfWork.GetMainCategoryRepo().Remove(maincatdb);
-                _UnitOfWork.Save();
-                return RedirectToAction(nameof(Index));
+                    _UnitOfWork.GetMainCategoryRepo().Remove(maincatdb);
+                    _UnitOfWork.Save();
+                    return RedirectToAction(nameof(Index));
+                }
+                return NotFound();
             }
             catch
             {

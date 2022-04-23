@@ -65,8 +65,10 @@ namespace AmanTask
                     = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Secret"]))
                 };
             });
+            services.AddSession(options => {
+                options.IdleTimeout = TimeSpan.FromMinutes(60);//You can set Time   
+            });
 
-           
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -84,7 +86,7 @@ namespace AmanTask
             }
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
+            app.UseSession();
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();

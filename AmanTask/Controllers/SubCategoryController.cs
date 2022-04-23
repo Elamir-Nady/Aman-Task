@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace AmanTask.Web.Controllers
 {
-    [Authorize]
     public class SubCategoryController : Controller
     {
         public IUnitOfWork _UnitOfWork { get; }
@@ -19,36 +18,48 @@ namespace AmanTask.Web.Controllers
         // GET: MainCategoryController
         public ActionResult Index()
         {
+            if (HttpContext.Session.GetString("_Token") != null)
+            {
+                string[] includes = new string[] { "MainCategory" };
 
-            string[] includes = new string[] { "MainCategory" };
+                var subcats = _UnitOfWork.GetSubCategoryRepo().Get(includes);
+                if (subcats == null)
+                    return NotFound();
 
-            var subcats = _UnitOfWork.GetSubCategoryRepo().Get(includes);
-            if (subcats == null)
-                return NotFound();
+                return View(subcats);
+            }
+            return NotFound();
 
-            return View(subcats);
         }
 
         // GET: MainCategoryController/Details/5
         public ActionResult Details(int id)
         {
-            string[] includes = new string[] { "MainCategory" };
+            if (HttpContext.Session.GetString("_Token") != null)
+            {
+                string[] includes = new string[] { "MainCategory" };
 
-            if (id == 0)
-                return NotFound();
-            var subcat = _UnitOfWork.GetSubCategoryRepo().GetByID(id, includes);
-            if (subcat == null)
-                return NotFound(id);
-            return View(subcat);
+                if (id == 0)
+                    return NotFound();
+                var subcat = _UnitOfWork.GetSubCategoryRepo().GetByID(id, includes);
+                if (subcat == null)
+                    return NotFound(id);
+                return View(subcat);
+            }
+            return NotFound();
         }
 
         // GET: MainCategoryController/Create
         public ActionResult Create()
         {
-            string[] includes = new string[] { "MainCategory" };
-            var mainCat = _UnitOfWork.GetMainCategoryRepo().Get(includes);
-            ViewBag.MianCategoryId = new SelectList(mainCat, "Id", "Name");
-            return View();
+            if (HttpContext.Session.GetString("_Token") != null)
+            {
+                string[] includes = new string[] { "MainCategory" };
+                var mainCat = _UnitOfWork.GetMainCategoryRepo().Get(includes);
+                ViewBag.MianCategoryId = new SelectList(mainCat, "Id", "Name");
+                return View();
+            }
+            return NotFound();
         }
 
         // POST: MainCategoryController/Create
@@ -58,15 +69,19 @@ namespace AmanTask.Web.Controllers
         {
             try
             {
-                if (ModelState.IsValid)
+                if (HttpContext.Session.GetString("_Token") != null)
                 {
+                    if (ModelState.IsValid)
+                    {
 
-                    if (subcat == null)
-                        return NotFound();
-                    _UnitOfWork.GetSubCategoryRepo().Add(subcat);
-                    _UnitOfWork.Save();
+                        if (subcat == null)
+                            return NotFound();
+                        _UnitOfWork.GetSubCategoryRepo().Add(subcat);
+                        _UnitOfWork.Save();
+                    }
+                    return RedirectToAction(nameof(Index));
                 }
-                return RedirectToAction(nameof(Index));
+                return NotFound();
             }
             catch
             {
@@ -77,16 +92,21 @@ namespace AmanTask.Web.Controllers
         // GET: MainCategoryController/Edit/5
         public ActionResult Edit(int id)
         {
-            string[] includes = new string[] { "MainCategory" };
+            if (HttpContext.Session.GetString("_Token") != null)
+            {
+                string[] includes = new string[] { "MainCategory" };
 
-            var mainCat = _UnitOfWork.GetMainCategoryRepo().Get(includes);
-            ViewBag.MianCategoryId = new SelectList(mainCat, "Id", "Name");
-            if (id == 0)
-                return NotFound();
-            var subcat = _UnitOfWork.GetSubCategoryRepo().GetByID(id, includes);
-            if (subcat == null)
-                return NotFound(id);
-            return View(subcat);
+                var mainCat = _UnitOfWork.GetMainCategoryRepo().Get(includes);
+                ViewBag.MianCategoryId = new SelectList(mainCat, "Id", "Name");
+                if (id == 0)
+                    return NotFound();
+                var subcat = _UnitOfWork.GetSubCategoryRepo().GetByID(id, includes);
+                if (subcat == null)
+                    return NotFound(id);
+                return View(subcat);
+            }
+            return NotFound();
+
         }
 
         // POST: MainCategoryController/Edit/5
@@ -96,23 +116,27 @@ namespace AmanTask.Web.Controllers
         {
             try
             {
-                string[] includes = new string[] { "MainCategory" };
-
-                if (ModelState.IsValid)
+                if (HttpContext.Session.GetString("_Token") != null)
                 {
-                    if (id == 0)
-                        return NotFound();
-                    if (subcat == null)
-                        return NotFound();
-                    var subcatdb = _UnitOfWork.GetSubCategoryRepo().GetByID(id, includes);
-                    if (subcatdb == null)
-                        return NotFound(id);
-                    subcatdb.Name = subcat.Name;
-                    subcatdb.MianCategoryId = subcat.MianCategoryId;
-                    _UnitOfWork.GetSubCategoryRepo().Update(subcatdb);
-                    _UnitOfWork.Save();
+                    string[] includes = new string[] { "MainCategory" };
+
+                    if (ModelState.IsValid)
+                    {
+                        if (id == 0)
+                            return NotFound();
+                        if (subcat == null)
+                            return NotFound();
+                        var subcatdb = _UnitOfWork.GetSubCategoryRepo().GetByID(id, includes);
+                        if (subcatdb == null)
+                            return NotFound(id);
+                        subcatdb.Name = subcat.Name;
+                        subcatdb.MianCategoryId = subcat.MianCategoryId;
+                        _UnitOfWork.GetSubCategoryRepo().Update(subcatdb);
+                        _UnitOfWork.Save();
+                    }
+                    return RedirectToAction(nameof(Index));
                 }
-                return RedirectToAction(nameof(Index));
+                return NotFound();
             }
             catch
             {
@@ -123,14 +147,18 @@ namespace AmanTask.Web.Controllers
         // GET: MainCategoryController/Delete/5
         public ActionResult Delete(int id)
         {
-            string[] includes = new string[] { "MainCategory" };
+            if (HttpContext.Session.GetString("_Token") != null)
+            {
+                string[] includes = new string[] { "MainCategory" };
 
-            if (id == 0)
-                return NotFound();
-            var subcat = _UnitOfWork.GetSubCategoryRepo().GetByID(id, includes);
-            if (subcat == null)
-                return NotFound(id);
-            return View(subcat);
+                if (id == 0)
+                    return NotFound();
+                var subcat = _UnitOfWork.GetSubCategoryRepo().GetByID(id, includes);
+                if (subcat == null)
+                    return NotFound(id);
+                return View(subcat);
+            }
+            return NotFound();
         }
 
         // POST: MainCategoryController/Delete/5
@@ -140,19 +168,23 @@ namespace AmanTask.Web.Controllers
         {
             try
             {
-                string[] includes = new string[] { "MainCategory" };
+                if (HttpContext.Session.GetString("_Token") != null)
+                {
+                    string[] includes = new string[] { "MainCategory" };
 
-                if (id == 0)
-                    return NotFound();
-                if (subcat == null)
-                    return NotFound();
-                var subcatdb = _UnitOfWork.GetSubCategoryRepo().GetByID(id, includes);
-                if (subcatdb == null)
-                    return NotFound(id);
+                    if (id == 0)
+                        return NotFound();
+                    if (subcat == null)
+                        return NotFound();
+                    var subcatdb = _UnitOfWork.GetSubCategoryRepo().GetByID(id, includes);
+                    if (subcatdb == null)
+                        return NotFound(id);
 
-                _UnitOfWork.GetSubCategoryRepo().Remove(subcatdb);
-                _UnitOfWork.Save();
-                return RedirectToAction(nameof(Index));
+                    _UnitOfWork.GetSubCategoryRepo().Remove(subcatdb);
+                    _UnitOfWork.Save();
+                    return RedirectToAction(nameof(Index));
+                }
+                return NotFound();
             }
             catch
             {
